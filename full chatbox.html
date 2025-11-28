@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      background-color: green;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      margin: 0;
+      padding-top: 40px;
+    }
+
+    .chat-container {
+      width: 400px;
+      background-color: red;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+    }
+
+    .chat-input {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .chat-input input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      outline: none;
+      font-size: 14px;
+    }
+
+    .chat-input button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.2s;
+    }
+
+    .chat-input button:hover {
+      background-color: #0056b3;
+    }
+
+    .message-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .message {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .message img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+    }
+
+    .bubble {
+      padding: 10px 14px;
+      border-radius: 16px;
+      max-width: 75%;
+      font-size: 14px;
+      word-wrap: break-word;
+    }
+
+    .user .bubble {
+      background-color: green;
+      color: white;
+      margin-left: auto;
+    }
+
+    .robot .bubble {
+      background-color: blue;
+      color: white;
+      align-self: flex-start;
+    }
+
+    .message button {
+      background-color: blueviolet;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 5px 10px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: background-color 0.2s;
+    }
+
+    .message button:hover {
+      background-color: blue;
+    }
+  </style>
+
+  <title>Full Chatbox Project</title>
+</head>
+<body>
+  <div class="js-container"></div>
+
+  <script src="https://unpkg.com/supersimpledev/react.js"></script>  
+  <script src="https://unpkg.com/supersimpledev/react-dom.js"></script>  
+  <script src="https://unpkg.com/supersimpledev/babel.js"></script>  
+
+  <script type="text/babel">
+    // ✅ Chat Input Component
+    function ChatInput({ onSend, isSending }) {
+      const [inputValue, setInputValue] = React.useState("");
+
+      function handleSend() {
+        if (inputValue.trim() === "") return;
+        onSend(inputValue);
+        setInputValue("");
+      }
+
+      return (
+        <div className="chat-input">
+          <input
+            placeholder="Send a message to Chatbox"
+            size="30"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+          />
+          <button onClick={handleSend} disabled={isSending}>
+            {isSending ? "Sending..." : "Send"}
+          </button>
+        </div>
+      );
+    }
+
+    // ✅ Single Message Component
+    function ChatMessage({ message, sender, onDelete }) {
+      return (
+        <div className={`message ${sender}`}>
+          {sender === "robot" && <img src="robotlogo.png" alt="robot" />}
+          <div className="bubble">{message}</div>
+          {sender === "user" && <img src="userlogo.png" alt="user" />}
+          <button onClick={onDelete}>Delete</button>
+        </div>
+      );
+    }
+
+    // ✅ Chat List + Logic
+    function ChatMessages() {
+      const [chatMessages, setChatMessages] = React.useState([
+        { message: "Hello chatbot", sender: "user", id: "id1" },
+        { message: "Hello, how can we help you?", sender: "robot", id: "id2" },
+        { message: "Can you get me today's date?", sender: "user", id: "id3" },
+        { message: "Today's date is 25th October, 2025", sender: "robot", id: "id4" },
+      ]);
+
+      const [isSending, setIsSending] = React.useState(false);
+
+      function handleSend(newMessage) {
+        setIsSending(true);
+
+        setTimeout(() => {
+          // Add user message
+          const userMsg = { message: newMessage, sender: "user", id: crypto.randomUUID() };
+          // Add robot reply (optional basic response)
+          let response;
+const msg = newMessage.toLowerCase();
+
+if (msg.includes("hello")) {
+  response = "👋 Hi there! How can I help you today?";
+
+} else if (msg.includes("date")) {
+  response = `📅 Today's date is ${new Date().toDateString()}`;
+
+} else if (msg.includes("time")) {
+  const now = new Date();
+
+  // Detect which country the user mentioned
+  if (msg.includes("nigeria") || msg.includes("lagos")) {
+    response = `🇳🇬 The time in Nigeria is ${now.toLocaleString("en-NG", { timeZone: "Africa/Lagos" })}`;
+  } else if (msg.includes("south africa") || msg.includes("cape town") || msg.includes("johannesburg")) {
+    response = `🇿🇦 The time in South Africa is ${now.toLocaleString("en-ZA", { timeZone: "Africa/Johannesburg" })}`;
+  } else if (msg.includes("egypt") || msg.includes("cairo")) {
+    response = `🇪🇬 The time in Egypt is ${now.toLocaleString("ar-EG", { timeZone: "Africa/Cairo" })}`;
+  } else if (msg.includes("usa") || msg.includes("new york") || msg.includes("america")) {
+    response = `🇺🇸 The time in the USA (New York) is ${now.toLocaleString("en-US", { timeZone: "America/New_York" })}`;
+  } else if (msg.includes("uk") || msg.includes("london") || msg.includes("england")) {
+    response = `🇬🇧 The time in the UK is ${now.toLocaleString("en-GB", { timeZone: "Europe/London" })}`;
+  } else if (msg.includes("india") || msg.includes("delhi") || msg.includes("mumbai")) {
+    response = `🇮🇳 The time in India is ${now.toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}`;
+  } else if (msg.includes("china") || msg.includes("beijing") || msg.includes("shanghai")) {
+    response = `🇨🇳 The time in China is ${now.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" })}`;
+  } else if (msg.includes("japan") || msg.includes("tokyo")) {
+    response = `🇯🇵 The time in Japan is ${now.toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })}`;
+  } else if (msg.includes("australia") || msg.includes("sydney") || msg.includes("melbourne")) {
+    response = `🇦🇺 The time in Australia is ${now.toLocaleString("en-AU", { timeZone: "Australia/Sydney" })}`;
+  } else {
+    response = "🌍 Please tell me which country you want the time for (e.g., 'time in Nigeria').";
+  }
+
+} else {
+  response = "🤖 I'm not sure I understand, but I'm learning!";
+}
+
+
+
+    // ✅ Use 'response' for the robot reply
+    const botReply = { message: response, sender: "robot", id: crypto.randomUUID() };
+
+          setChatMessages((prev) => [...prev, userMsg, botReply]);
+          setIsSending(false);
+        }, 1000);
+      }
+
+      function handleDelete(id) {
+        setChatMessages((prev) => prev.filter((msg) => msg.id !== id));
+      }
+
+      return (
+        <div className="chat-container">
+          <ChatInput onSend={handleSend} isSending={isSending} />
+
+          <div className="message-container">
+            {chatMessages.map((msg) => (
+              <ChatMessage
+                key={msg.id}
+                message={msg.message}
+                sender={msg.sender}
+                onDelete={() => handleDelete(msg.id)}
+              />
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // ✅ App Component
+    function App() {
+      return <ChatMessages />;
+    }
+
+    const container = document.querySelector(".js-container");
+    ReactDOM.createRoot(container).render(<App />);
+  </script>
+</body>
+</html>
